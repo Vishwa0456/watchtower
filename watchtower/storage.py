@@ -84,6 +84,21 @@ class Storage:
             )
             return cur.fetchall()
 
+    def history(self, check_name: str, limit: int = 60) -> list[sqlite3.Row]:
+        """Returns the most recent `limit` results for one check, oldest
+        first (chart-ready order). Used to render trend charts - unlike
+        recent_incidents, this includes non-breached values too, since a
+        chart needs the full trend, not just the breach moments.
+        """
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT timestamp, value FROM check_results WHERE name = ? "
+                "ORDER BY timestamp DESC LIMIT ?",
+                (check_name, limit),
+            )
+            rows = cur.fetchall()
+            return list(reversed(rows))
+
     def close(self) -> None:
         pass  # no persistent connection to close; kept for API compatibility
 

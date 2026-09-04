@@ -39,3 +39,26 @@ def test_recent_incidents_respects_limit(tmp_path):
     incidents = storage.recent_incidents(limit=2)
     assert len(incidents) == 2
     storage.close()
+
+
+def test_history_returns_oldest_first(tmp_path):
+    db_path = tmp_path / "test.db"
+    storage = Storage(db_path)
+    for v in [10.0, 20.0, 30.0]:
+        storage.record_check(CheckResult.make("cpu", v, 90.0))
+
+    rows = storage.history("cpu", limit=10)
+    assert [r["value"] for r in rows] == [10.0, 20.0, 30.0]
+    storage.close()
+
+
+def test_history_respects_limit_and_check_name(tmp_path):
+    db_path = tmp_path / "test.db"
+    storage = Storage(db_path)
+    for v in [1.0, 2.0, 3.0, 4.0]:
+        storage.record_check(CheckResult.make("cpu", v, 90.0))
+    storage.record_check(CheckResult.make("memory", 50.0, 90.0))
+
+    rows = storage.history("cpu", limit=2)
+    assert [r["value"] for r in rows] == [3.0, 4.0]  # most recent 2, oldest first
+    storage.close()
