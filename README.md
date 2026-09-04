@@ -4,7 +4,7 @@ A system health monitor with configurable, **safe-by-default** auto-remediation,
 
 Watchtower watches CPU, memory, disk, and process count on a schedule. When a threshold is breached, it logs the incident, stores it in SQLite, sends an alert (console or Slack), and — only if you've explicitly opted in — takes a remediation action.
 
-[![CI](https://github.com/YOUR_USERNAME/watchtower/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/watchtower/actions)
+[![CI](https://github.com/Vishwa0456/watchtower/actions/workflows/ci.yml/badge.svg)](https://github.com/Vishwa0456/watchtower/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
