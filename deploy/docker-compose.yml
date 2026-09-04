@@ -1,0 +1,41 @@
+# Local demo of the fleet architecture: one Watchtower agent, scraped by
+# Prometheus, visualized in Grafana. Run with:
+#   docker compose -f deploy/docker-compose.yml up
+#
+# Then open:
+#   http://localhost:9100/metrics  - raw agent metrics
+#   http://localhost:9090          - Prometheus (try querying watchtower_cpu_percent)
+#   http://localhost:3000          - Grafana (default login admin/admin)
+#
+# This is Phase 1/2 of the fleet architecture: a single agent proves the
+# scrape pipeline works end-to-end. Adding more agents is just adding
+# more entries to prometheus.yml's targets list and more service blocks
+# below - the architecture doesn't change.
+
+services:
+  agent:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: ["agent", "--port", "9100", "--hostname", "demo-agent-1"]
+    ports:
+      - "9100:9100"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - agent
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    depends_on:
+      - prometheus

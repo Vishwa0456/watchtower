@@ -1,0 +1,36 @@
+# Watchtower configuration
+interval_seconds: 60
+
+# Safety switch. When true (default), remediations compute and log/notify
+# what they WOULD do but take no destructive action. Flip to false only
+# once you've reviewed dry-run output and trust the thresholds below.
+dry_run: true
+
+thresholds:
+  cpu_percent: 90
+  memory_percent: 90
+  disk_percent: 90
+  max_processes: 500
+
+remediations:
+  clear_temp_files:
+    enabled: false
+    path: /tmp
+    max_age_hours: 24
+  kill_runaway_process:
+    enabled: false
+    cpu_threshold_percent: 95
+
+notifiers:
+  console:
+    enabled: true
+  slack:
+    enabled: false
+    webhook_url: ""  # set via env var substitution in your deploy, don't commit real webhooks
+
+storage:
+  db_path: watchtower.db
+
+logging:
+  level: INFO
+  log_path: watchtower.log

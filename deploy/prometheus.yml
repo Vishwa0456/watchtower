@@ -1,0 +1,23 @@
+# Prometheus scrape configuration for the Watchtower fleet.
+#
+# Each entry under static_configs.targets is one Watchtower agent
+# (one per monitored host). In Phase 1 this is a static list; a real
+# fleet would generate this via service discovery (file_sd, DNS, or a
+# cloud provider's SD integration) instead of hand-editing this file
+# per host - that's a natural next step, not implemented yet.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "watchtower-agents"
+    static_configs:
+      - targets:
+          - "agent:9100"
+        labels:
+          environment: "local-dev"
+    # In docker-compose, "agent" resolves via Docker's internal DNS to
+    # the agent service defined in docker-compose.yml. On a real fleet,
+    # replace with actual hostnames/IPs, one per line:
+    #   - targets: ["host1.example.com:9100", "host2.example.com:9100"]
